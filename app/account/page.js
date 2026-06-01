@@ -63,10 +63,17 @@ export default function AccountPage() {
             setShopifyOrders(data.orders || []);
             setIsShopifyAuth(true);
           } else {
-            setShopifyOrdersError('Failed to load your Shopify orders. Please try again later.');
+            // Also parse the error message if it's JSON from our backend
+            try {
+              const errData = await res.json();
+              setShopifyOrdersError(errData.error || 'Failed to load your Shopify orders.');
+            } catch (e) {
+              setShopifyOrdersError('Failed to load your Shopify orders. Please try again later.');
+            }
           }
         } catch (error) {
-          setShopifyOrdersError('An error occurred while communicating with Shopify.');
+          console.error("Fetch orders error:", error);
+          setShopifyOrdersError(`Connection Error: ${error.message || 'An error occurred while communicating with Shopify.'}`);
         } finally {
           setShopifyOrdersLoading(false);
         }
