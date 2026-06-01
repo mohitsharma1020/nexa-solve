@@ -9,7 +9,7 @@ import {
 import { dbService } from '../../services/dbService';
 import { photoReviewService } from '../../services/photoReviewService';
 import { authService } from '../../services/authService';
-import { storage } from '../../services/firebaseClient';
+import { auth, storage } from '../../services/firebaseClient';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useWishlist } from '../context/WishlistContext';
 import styles from './Account.module.css';
@@ -43,7 +43,7 @@ export default function AccountPage() {
         setShopifyOrdersLoading(true);
         setShopifyOrdersError('');
         try {
-          const user = authService.getCurrentUser();
+          const user = auth.currentUser;
           if (!user) {
             setShopifyOrdersError('Please sign in to view your orders.');
             setShopifyOrdersLoading(false);
