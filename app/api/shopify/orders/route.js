@@ -1,40 +1,57 @@
 import { NextResponse } from 'next/server';
+import { adminAuth } from '../../../../lib/firebaseAdmin';
 
 export async function GET(request) {
-  const token = request.cookies.get('shopify_access_token')?.value;
-  console.log('[Shopify Orders API] Shopify auth cookie found:', !!token);
+  try {
+    // 1. Verify the Firebase ID Token
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+    }
 
-  if (!token) {
-    console.warn('[Shopify Orders API] Unauthorized: No access token found');
-    return NextResponse.json({ error: 'unauthorized', message: 'No access token found' }, { status: 401 });
-  }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch (error) {
+      console.error('[Shopify Orders API] Firebase token verification failed:', error);
+      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    }
 
-  const shopifyAuthUrl = process.env.SHOPIFY_CUSTOMER_ACCOUNT_URL;
-  if (!shopifyAuthUrl) {
-    return NextResponse.json({ error: 'configuration_error', message: 'SHOPIFY_CUSTOMER_ACCOUNT_URL is not set' }, { status: 500 });
-  }
+    const userEmail = decodedToken.email;
+    if (!userEmail) {
+      return NextResponse.json({ error: 'No email associated with this account' }, { status: 400 });
+    }
 
-  const query = `
-    query getCustomerOrders {
-      customer {
-        id
-        firstName
-        lastName
-        emailAddress {
-          emailAddress
-        }
-        orders(first: 10, sortKey: CREATED_AT, reverse: true) {
+    console.log(`[Shopify Orders API] Fetching orders for verified email: ${userEmail}`);
+
+    // 2. Query Shopify Admin API
+    const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
+    const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+
+    if (!shopifyDomain || !adminToken) {
+      console.error('[Shopify Orders API] Missing Shopify Admin credentials in environment variables.');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    const shopifyGraphQLUrl = `https://${shopifyDomain}/admin/api/2024-04/graphql.json`;
+
+    const query = `
+      query getOrdersByEmail($query: String!) {
+        orders(first: 20, query: $query, sortKey: CREATED_AT, reverse: true) {
           edges {
             node {
               id
               name
               createdAt
-              financialStatus
-              fulfillmentStatus
+              displayFinancialStatus
+              displayFulfillmentStatus
               statusPageUrl
-              totalPrice {
-                amount
-                currencyCode
+              totalPriceSet {
+                shopMoney {
+                  amount
+                  currencyCode
+                }
               }
               lineItems(first: 10) {
                 edges {
@@ -42,8 +59,14 @@ export async function GET(request) {
                     id
                     title
                     quantity
-                    image {
-                      url
+                    variant {
+                      id
+                      product {
+                        id
+                      }
+                      image {
+                        url
+                      }
                     }
                   }
                 }
@@ -52,37 +75,67 @@ export async function GET(request) {
           }
         }
       }
-    }
-  `;
+    `;
 
-  try {
-    const res = await fetch(`${shopifyAuthUrl}/account/customer/api/2024-04/graphql`, {
+    const variables = {
+      query: `email:${userEmail}`
+    };
+
+    const res = await fetch(shopifyGraphQLUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': token,
+        'X-Shopify-Access-Token': adminToken,
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query, variables }),
+      cache: 'no-store'
     });
 
-    const data = await res.json();
-    console.log(`[Shopify Orders API] GraphQL fetch status: ${res.ok ? 'success' : 'error'}, HTTP ${res.status}`);
-
-    if (data.errors) {
-      console.error('[Shopify Orders API Error]', data.errors);
-      return NextResponse.json({ error: 'graphql_error', details: data.errors }, { status: 400 });
+    if (!res.ok) {
+      console.error(`[Shopify Orders API] Admin API HTTP Error: ${res.status}`);
+      return NextResponse.json({ error: 'Failed to fetch from Shopify Admin API' }, { status: res.status });
     }
 
-    const orders = data.data.customer?.orders?.edges?.map(e => e.node) || [];
-    console.log(`[Shopify Orders API] Order count returned: ${orders.length}`);
+    const json = await res.json();
+    
+    if (json.errors) {
+      console.error('[Shopify Orders API] GraphQL Errors:', json.errors);
+      return NextResponse.json({ error: 'GraphQL error' }, { status: 500 });
+    }
 
-    return NextResponse.json({
-      customer: data.data.customer,
-      orders: orders
-    });
+    // Map the Admin API structure to match what the frontend expects
+    const rawOrders = json.data?.orders?.edges || [];
+    
+    const mappedOrders = rawOrders.map(({ node }) => ({
+      id: node.id,
+      name: node.name,
+      createdAt: node.createdAt,
+      financialStatus: node.displayFinancialStatus,
+      fulfillmentStatus: node.displayFulfillmentStatus,
+      statusPageUrl: node.statusPageUrl,
+      totalPrice: {
+        amount: node.totalPriceSet?.shopMoney?.amount,
+        currencyCode: node.totalPriceSet?.shopMoney?.currencyCode,
+      },
+      lineItems: {
+        edges: node.lineItems.edges.map(li => ({
+          node: {
+            title: li.node.title,
+            quantity: li.node.quantity,
+            image: {
+              url: li.node.variant?.image?.url || null
+            }
+          }
+        }))
+      }
+    }));
+
+    console.log(`[Shopify Orders API] Successfully mapped ${mappedOrders.length} orders for ${userEmail}`);
+
+    return NextResponse.json({ orders: mappedOrders });
 
   } catch (error) {
-    console.error('[Shopify Orders Fetch Error]', error);
-    return NextResponse.json({ error: 'server_error', message: 'Failed to fetch orders' }, { status: 500 });
+    console.error('[Shopify Orders API] Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

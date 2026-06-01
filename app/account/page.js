@@ -43,10 +43,22 @@ export default function AccountPage() {
         setShopifyOrdersLoading(true);
         setShopifyOrdersError('');
         try {
-          const res = await fetch('/api/shopify/orders');
-          if (res.status === 401) {
-            setIsShopifyAuth(false);
-          } else if (res.ok) {
+          const user = authService.getCurrentUser();
+          if (!user) {
+            setShopifyOrdersError('Please sign in to view your orders.');
+            setShopifyOrdersLoading(false);
+            return;
+          }
+          
+          const idToken = await user.getIdToken();
+          
+          const res = await fetch('/api/shopify/orders', {
+            headers: {
+              'Authorization': `Bearer ${idToken}`
+            }
+          });
+          
+          if (res.ok) {
             const data = await res.json();
             setShopifyOrders(data.orders || []);
             setIsShopifyAuth(true);
@@ -61,7 +73,7 @@ export default function AccountPage() {
       };
       fetchShopifyOrders();
     }
-  }, [activeTab, isShopifyAuth]);
+  }, [activeTab, isShopifyAuth, userProfile]);
 
   // Phase 5A: Review Eligibility State
   const [eligibleReviewProducts, setEligibleReviewProducts] = useState([]);
@@ -498,24 +510,13 @@ export default function AccountPage() {
                     <Loader2 size={32} className={styles.loadingSpinner} style={{ animation: 'spin 1s linear infinite' }} />
                     <p style={{ marginTop: '16px' }}>Loading your Shopify orders...</p>
                   </div>
-                ) : !isShopifyAuth ? (
-                  <div className={styles.emptyState}>
-                    <Package size={48} className={styles.emptyIcon} style={{ color: '#0066FF' }} />
-                    <h3 className={styles.emptyTitle}>Sign in to view your Shopify orders</h3>
-                    <p className={styles.emptyDesc}>
-                      To protect your privacy and securely access your order history, please sign in with your Shopify Customer Account.
-                    </p>
-                    <a href="/api/auth/shopify/login" className={styles.primaryBtn} style={{ marginTop: '16px', display: 'inline-block', textDecoration: 'none' }}>
-                      Sign in with Shopify
-                    </a>
-                  </div>
                 ) : shopifyOrdersError ? (
                   <div className={styles.emptyState}>
                     <h3 className={styles.emptyTitle}>Error</h3>
                     <p className={styles.emptyDesc} style={{ color: 'var(--color-error)' }}>{shopifyOrdersError}</p>
-                    <a href="/api/auth/shopify/login" className={styles.outlineBtn} style={{ marginTop: '16px', display: 'inline-block', textDecoration: 'none' }}>
-                      Reconnect Account
-                    </a>
+                    <button onClick={() => window.location.reload()} className={styles.outlineBtn} style={{ marginTop: '16px', display: 'inline-block' }}>
+                      Try Again
+                    </button>
                   </div>
                 ) : shopifyOrders.length === 0 ? (
                   <div className={styles.emptyState}>
@@ -564,9 +565,8 @@ export default function AccountPage() {
                         </div>
                       </div>
                     ))}
-                    
                     <div style={{ textAlign: 'center', marginTop: '24px' }}>
-                       <a href="/api/auth/shopify/logout" style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', textDecoration: 'underline' }}>Sign out of Shopify Account</a>
+                       <span style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>Orders automatically synced via {userProfile?.email}</span>
                     </div>
                   </div>
                 )
