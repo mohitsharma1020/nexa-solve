@@ -9,7 +9,7 @@ import {
 import { dbService } from '../../services/dbService';
 import { photoReviewService } from '../../services/photoReviewService';
 import { authService } from '../../services/authService';
-import { auth, storage } from '../../services/firebaseClient';
+import { storage } from '../../services/firebaseClient';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useWishlist } from '../context/WishlistContext';
 import styles from './Account.module.css';

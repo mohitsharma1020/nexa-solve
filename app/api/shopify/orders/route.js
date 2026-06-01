@@ -3,10 +3,13 @@ import { adminAuth, adminDb } from '../../../../lib/firebaseAdmin';
 
 export async function GET(request) {
   try {
-    // 1. Verify the Firebase ID Token
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+    }
+
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json({ error: 'Server misconfigured: Missing Firebase Admin variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY)' }, { status: 500 });
     }
 
     const idToken = authHeader.split('Bearer ')[1];
@@ -23,13 +26,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'No email associated with this account' }, { status: 400 });
     }
 
-    console.log(`[Shopify Orders API] Fetching orders from Firebase for verified email: ${userEmail}`);
-
-    if (!adminDb) {
-      return NextResponse.json({ error: 'Server database not initialized' }, { status: 500 });
-    }
-
-    // 2. Fetch Orders securely from Firebase using the email
+    // Fetch Orders securely from Firebase using the email
     const ordersSnapshot = await adminDb
       .collection('users')
       .doc(userEmail)
@@ -42,8 +39,6 @@ export async function GET(request) {
     ordersSnapshot.forEach(doc => {
       orders.push(doc.data());
     });
-
-    console.log(`[Shopify Orders API] Successfully fetched ${orders.length} orders for ${userEmail}`);
 
     return NextResponse.json({ orders });
 
