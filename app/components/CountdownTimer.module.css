@@ -1,0 +1,81 @@
+.countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.timeBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 16px 22px;
+  min-width: 90px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeBlock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.timeValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.separator {
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  padding-bottom: 20px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@media (max-width: 576px) {
+  .countdown {
+    gap: 8px;
+  }
+
+  .timeBlock {
+    padding: 12px 14px;
+    min-width: 70px;
+    border-radius: 12px;
+  }
+
+  .timeValue {
+    font-size: 1.75rem;
+  }
+
+  .timeLabel {
+    font-size: 0.65rem;
+  }
+
+  .separator {
+    font-size: 1.5rem;
+    padding-bottom: 16px;
+  }
+}

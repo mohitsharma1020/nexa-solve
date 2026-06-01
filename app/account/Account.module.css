@@ -1,0 +1,764 @@
+.accountPageWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 80vh;
+}
+
+/* AUTH BOX */
+.authContainer {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--color-off-white);
+}
+.authBox {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+.authIconWrapper {
+  width: 72px;
+  height: 72px;
+  background: var(--color-light-grey);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+.authTitle {
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  margin-bottom: 12px;
+  color: var(--color-primary);
+  font-weight: 800;
+}
+.authDesc {
+  color: var(--color-text-light);
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.googleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light, #e0e0e0);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.googleBtn:hover {
+  background: #f8f9fa;
+  border-color: #d2d2d2;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+}
+.googleBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 24px 0;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--color-border);
+}
+.divider span {
+  padding: 0 16px;
+}
+
+.authSuccessBox {
+  background: rgba(0, 200, 83, 0.08);
+  border: 1px solid rgba(0, 200, 83, 0.2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.authSuccess {
+  color: var(--color-success);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.authHelperText {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.authHint {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+.authInput {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  margin-bottom: 20px;
+  font-size: 1rem;
+  outline: none;
+  background: #fafafa;
+  transition: border-color 0.2s;
+}
+.authInput:focus {
+  border-color: var(--color-accent);
+}
+.otpInput {
+  text-align: center;
+  letter-spacing: 4px;
+  font-weight: 700;
+}
+.authSubmitBtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.authSubmitBtn:hover:not(:disabled) {
+  background: var(--color-accent);
+}
+.authSubmitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.authTextBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  margin-top: 20px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.authError {
+  color: var(--color-error);
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* HEADER CARD */
+.headerCard {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  border: 1px solid var(--color-border);
+}
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.headerAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.headerInfo {
+  flex: 1;
+  min-width: 200px;
+}
+.headerWelcome {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 4px 0;
+}
+.headerSubtitle {
+  color: var(--color-text-light);
+  margin: 0;
+  font-size: 0.95rem;
+}
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.logoutBtn:hover {
+  background: var(--color-light-grey);
+}
+
+/* LAYOUT & TABS */
+.accountLayout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+.accountSidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.accountTab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-light);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.accountTab:hover {
+  background: var(--color-off-white);
+  color: var(--color-primary);
+}
+.accountTab.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.accountContent {
+  flex: 1;
+  min-width: 0; /* Prevent overflow */
+}
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 24px;
+}
+.fadeIn {
+  animation: fadeIn 0.3s ease;
+}
+
+/* SUMMARY GRID */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.summaryCard {
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+.creditsCard {
+  background: linear-gradient(135deg, var(--color-primary), #1a1a2e);
+  color: #fff;
+  border: none;
+}
+.pendingCard {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+.statsCard {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.statsCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+.cardIcon {
+  color: var(--color-accent);
+}
+.creditsCard .cardIcon {
+  color: #4dabf7;
+}
+.cardValue {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+.cardSubtext {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ORDER CARDS */
+.orderCardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.orderCard {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+.orderCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 20px;
+  background: var(--color-off-white);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.orderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.orderId {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1rem;
+  word-break: break-all;
+}
+.orderDate {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+.orderStatusBadge {
+  padding: 6px 12px;
+  background: #e6f4ea;
+  color: #137333;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.orderCardBody {
+  padding: 20px;
+}
+.orderTotal {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.totalLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+.totalValue {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+.orderItemsSection {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 12px;
+}
+.itemsLabel {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.orderItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.orderItemLine {
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  line-height: 1.4;
+}
+.orderItemTitle {
+  font-weight: 500;
+}
+.orderItemQty {
+  font-weight: 700;
+  color: var(--color-text-light);
+}
+.orderCardFooter {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  background: #fff;
+  flex-wrap: wrap;
+}
+.actionBtn {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+.outlineBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+.outlineBtn:hover {
+  background: var(--color-off-white);
+}
+.solidBtn {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: #fff;
+}
+.solidBtn:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* REFERRAL CARD */
+.referralHeroCard {
+  background: linear-gradient(135deg, var(--color-primary), #1a1a2e);
+  color: #fff;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+}
+.referralTitle {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.referralSubtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #4dabf7;
+}
+.referralExplainer {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+.referralActionBox {
+  background: #fff;
+  padding: 8px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 8px;
+}
+.referralCodeLabel {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding-left: 12px;
+  display: none;
+}
+.referralCodeText {
+  flex: 1;
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  padding: 12px;
+  min-width: 120px;
+}
+.copyBtn {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 0 auto;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.copyBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+/* CREDITS */
+.creditsDisplayCard {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.creditLabel {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.creditAmount {
+  display: block;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+}
+.creditDivider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 24px 0;
+}
+.creditSecondary {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.creditStat {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}
+.creditStat strong {
+  color: var(--color-primary);
+}
+.creditsDisclaimer {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-top: 24px;
+  text-align: center;
+}
+.creditsEmptyState {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 24px;
+}
+
+/* PROFILE */
+.profileCard {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 24px;
+}
+.profileRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.profileRow:last-of-type {
+  border-bottom: none;
+}
+.profileLabel {
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+.profileValue {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.editProfileBtn {
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  background: var(--color-off-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* EMPTY STATES */
+.emptyState {
+  text-align: center;
+  padding: 64px 20px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+}
+.emptyIcon {
+  color: var(--color-text-light);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.emptyTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--color-primary);
+}
+.emptyDesc {
+  color: var(--color-text-light);
+  margin-bottom: 24px;
+}
+.primaryBtn {
+  display: inline-block;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* SAVED ITEMS */
+.savedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.savedCard {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.savedImgWrapper img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.savedInfo {
+  padding: 12px;
+}
+.savedInfo h4 {
+  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* MOBILE OVERRIDES */
+@media (max-width: 768px) {
+  .accountPageWrapper {
+    padding: 24px 16px;
+  }
+  .authBox {
+    padding: 32px 20px;
+    border-radius: 20px;
+  }
+  .headerCard {
+    padding: 20px;
+    border-radius: 16px;
+  }
+  .headerInner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .headerInfo {
+    min-width: 100%;
+  }
+  .logoutBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .accountLayout {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .accountSidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+    -webkit-overflow-scrolling: touch;
+  }
+  .accountSidebar::-webkit-scrollbar { 
+    display: none; 
+  }
+  .accountTab {
+    white-space: nowrap;
+    padding: 12px 20px;
+    flex-shrink: 0;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+  }
+  .accountTab.active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+  .referralHeroCard {
+    padding: 24px 20px;
+  }
+  .creditsDisplayCard {
+    padding: 24px 20px;
+  }
+  .creditAmount {
+    font-size: 2.5rem;
+  }
+  .profileRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

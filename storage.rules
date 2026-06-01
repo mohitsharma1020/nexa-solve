@@ -1,0 +1,24 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Reviews folder rules
+    match /reviews/{fileName} {
+      // Anyone can view the images (needed for admin dashboard and product pages)
+      allow read: if true;
+      
+      // Allow upload if it is an image and under 5MB
+      // Note: In a fully authenticated app, you would add `if request.auth != null;`
+      // Since Shopify handles auth in this architecture, we rely on the backend API for final verification.
+      // `resource == null` ensures users can create NEW files but NEVER overwrite or delete existing ones.
+      allow write: if request.resource.size < 5 * 1024 * 1024 
+                   && request.resource.contentType.matches('image/.*')
+                   && resource == null;
+    }
+  }
+}

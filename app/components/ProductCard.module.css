@@ -1,0 +1,297 @@
+/* ═══════════════════════════════════════════════════════════════
+   NexaSolve — ProductCard Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Card Container ─────────────────────────────────────────── */
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-light-grey);
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: transparent;
+}
+
+/* ── Image Container ────────────────────────────────────────── */
+.imageContainer {
+  display: block;
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--color-off-white);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imageHovered {
+  transform: scale(1.08);
+}
+
+/* ── Badge ──────────────────────────────────────────────────── */
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 14px;
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  z-index: 2;
+  box-shadow: 0 2px 8px var(--color-accent-glow);
+}
+
+/* ── Quick Action Buttons ───────────────────────────────────── */
+.quickActions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 2;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all var(--transition-base);
+}
+
+.quickActionsVisible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.quickBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color-text);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.quickBtn:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+  transform: scale(1.1);
+}
+
+.quickBtnActive {
+  background: var(--color-error-bg);
+}
+
+.quickBtnActive:hover {
+  background: var(--color-error);
+  color: var(--color-white);
+}
+
+/* ── Content Section ────────────────────────────────────────── */
+.content {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+/* ── Rating ─────────────────────────────────────────────────── */
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.reviewCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ── Category Label ─────────────────────────────────────────── */
+.category {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+/* ── Title ──────────────────────────────────────────────────── */
+.title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: var(--line-height-snug);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.title:hover {
+  color: var(--color-accent);
+}
+
+/* ── Price Row ──────────────────────────────────────────────── */
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.price {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.originalPrice {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.discountBadge {
+  padding: 2px 8px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+/* ── Add to Cart (Slide Up) ─────────────────────────────────── */
+.addToCartWrapper {
+  margin-top: auto;
+  overflow: hidden;
+  max-height: 60px;
+  opacity: 1;
+  margin-top: var(--space-3);
+  transition: all var(--transition-smooth);
+}
+
+/* Removed hover requirement */
+.addToCartVisible {
+}
+
+.addToCart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 10px 0;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addToCart:hover {
+  background: var(--color-accent);
+  box-shadow: 0 4px 16px var(--color-accent-glow);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .content {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+
+  .addToCartSuccess {
+    background: var(--color-success) !important;
+  }
+
+  .spinIcon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .addToCartWrapper {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: var(--space-3);
+  }
+
+  .quickActions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .title {
+    font-size: var(--font-size-sm);
+  }
+
+  .price {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ── Promo Box ──────────────────────────────────────────────── */
+.promoBox {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: #f0f8ff; /* Light glacier blue */
+  border: 1px solid #cce5ff;
+  border-radius: var(--radius-md);
+}
+
+.promoText {
+  font-size: 11px;
+  color: var(--color-accent);
+  margin-bottom: 2px;
+}
+
+.promoText strong {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.promoPrice {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}

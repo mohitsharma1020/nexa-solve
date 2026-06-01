@@ -1,0 +1,253 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  font-family: var(--font-sans);
+  min-height: 80vh;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.gateway {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5rem;
+  padding: 3rem;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid var(--light-grey);
+}
+
+.gateway h2 {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.gateway p {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnPrimary {
+  background: var(--accent-blue);
+  color: var(--white);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+}
+
+.btnPrimary:disabled {
+  background: var(--light-grey);
+  cursor: not-allowed;
+}
+
+.btnSuccess {
+  background: var(--success);
+  color: var(--white);
+}
+
+.btnSuccess:hover {
+  background: #00b34a;
+}
+
+.btnDanger {
+  background: var(--error);
+  color: var(--white);
+}
+
+.btnDanger:hover {
+  background: #e6352b;
+}
+
+.error {
+  color: var(--error);
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Dashboard Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--light-grey);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+.cardHeader h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardMeta {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.photoGallery {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.photoThumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid var(--light-grey);
+  transition: transform 0.2s ease;
+}
+
+.photoThumb:hover {
+  transform: scale(1.05);
+}
+
+.controls {
+  margin-top: auto;
+  background: var(--off-white);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.rewardPreview {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.actionRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.actionRow input {
+  flex: 1;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem;
+  color: var(--text-light);
+  background: var(--off-white);
+  border-radius: 12px;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.modalContent img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.modalClose {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}

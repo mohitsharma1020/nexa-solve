@@ -1,0 +1,350 @@
+/* ── CartBonusTimer.module.css ────────────────────────────────── */
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.04); }
+}
+
+@keyframes progressShrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clockPulse,
+  .iconPulse { animation: none !important; }
+  .progressBar { transition: width 1s linear; }
+}
+
+/* ── Shared Progress Track ───────────────────────────────────── */
+.progressTrack {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1s linear;
+}
+
+/* Progress color per tier */
+.progress_calm     { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.progress_moderate { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.progress_critical { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+/* ── Urgency Tier Backgrounds ────────────────────────────────── */
+.tier_calm {
+  --bonus-bg:     linear-gradient(135deg, #0a0f2e 0%, #0d2060 100%);
+  --bonus-border: rgba(59, 130, 246, 0.35);
+  --bonus-glow:   rgba(59, 130, 246, 0.15);
+  --bonus-text:   #93c5fd;
+  --bonus-sub:    rgba(255, 255, 255, 0.6);
+  --bonus-icon:   #60a5fa;
+  --bonus-timer:  #60a5fa;
+  --bonus-cta-bg: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+.tier_moderate {
+  --bonus-bg:     linear-gradient(135deg, #1a0f00 0%, #2d1a00 100%);
+  --bonus-border: rgba(245, 158, 11, 0.45);
+  --bonus-glow:   rgba(245, 158, 11, 0.12);
+  --bonus-text:   #fbbf24;
+  --bonus-sub:    rgba(255, 255, 255, 0.65);
+  --bonus-icon:   #f59e0b;
+  --bonus-timer:  #fbbf24;
+  --bonus-cta-bg: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.tier_critical {
+  --bonus-bg:     linear-gradient(135deg, #1a0000 0%, #2d0000 100%);
+  --bonus-border: rgba(239, 68, 68, 0.55);
+  --bonus-glow:   rgba(239, 68, 68, 0.12);
+  --bonus-text:   #fca5a5;
+  --bonus-sub:    rgba(255, 255, 255, 0.65);
+  --bonus-icon:   #ef4444;
+  --bonus-timer:  #f87171;
+  --bonus-cta-bg: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.tier_expired {
+  --bonus-bg:     linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  --bonus-border: rgba(107, 114, 128, 0.35);
+  --bonus-glow:   transparent;
+  --bonus-text:   #9ca3af;
+  --bonus-sub:    rgba(255, 255, 255, 0.4);
+  --bonus-icon:   #6b7280;
+  --bonus-timer:  #6b7280;
+  --bonus-cta-bg: #374151;
+}
+
+/* ── Pulse Animations ────────────────────────────────────────── */
+.clockPulse {
+  animation: pulseGlow 1s ease-in-out infinite;
+}
+
+.iconPulse {
+  animation: pulseGlow 1.2s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CART PAGE VARIANT (full, prominent)
+   ════════════════════════════════════════════════════════════════ */
+.cartBanner {
+  background: var(--bonus-bg);
+  border: 1px solid var(--bonus-border);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 40px var(--bonus-glow), 0 4px 20px rgba(0,0,0,0.15);
+  color: #fff;
+}
+
+.cartBannerTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cartBannerLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+}
+
+.bannerIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--bonus-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bonus-icon);
+  flex-shrink: 0;
+}
+
+.bannerHeading {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--bonus-text);
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+
+.bannerSub {
+  font-size: 0.85rem;
+  color: var(--bonus-sub);
+  line-height: 1.5;
+  max-width: 360px;
+}
+
+.timerBlock {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.timerDisplay {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--bonus-timer);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timerLabel {
+  font-size: 0.7rem;
+  color: var(--bonus-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.bannerCta {
+  margin-top: 16px;
+  display: flex;
+}
+
+.bannerCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  background: var(--bonus-cta-bg);
+  color: #fff;
+  border: none;
+  border-radius: 11px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+.bannerCtaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DRAWER VARIANT (compact)
+   ════════════════════════════════════════════════════════════════ */
+.drawerBanner {
+  background: var(--bonus-bg);
+  border-bottom: 1px solid var(--bonus-border);
+  padding: 12px 16px;
+  color: #fff;
+}
+
+.drawerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.drawerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.drawerIcon {
+  color: var(--bonus-icon);
+  flex-shrink: 0;
+}
+
+.drawerTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--bonus-text);
+  line-height: 1.2;
+}
+
+.drawerSub {
+  font-size: 0.75rem;
+  color: var(--bonus-sub);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.drawerClock {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--bonus-timer);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CHECKOUT VARIANT (slim inline)
+   ════════════════════════════════════════════════════════════════ */
+.checkoutBanner {
+  background: var(--bonus-bg);
+  border: 1px solid var(--bonus-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 0 20px var(--bonus-glow);
+}
+
+.checkoutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.checkoutLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bonus-icon);
+  font-size: 0.88rem;
+}
+
+.checkoutLabel {
+  font-weight: 700;
+  color: var(--bonus-text);
+}
+
+.checkoutTimer {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--bonus-sub);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.desktopText {
+  display: inline;
+}
+
+.mobileText {
+  display: none;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .cartBanner {
+    border-radius: 16px;
+    padding: 16px 18px;
+  }
+
+  .timerDisplay {
+    font-size: 1.6rem;
+  }
+
+  .bannerSub {
+    max-width: 200px;
+    font-size: 0.8rem;
+  }
+
+  .bannerCtaBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .bannerCta {
+    flex-direction: column;
+  }
+
+  .cartBannerTop {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .timerBlock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .timerLabel {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopText {
+    display: none;
+  }
+  .mobileText {
+    display: inline;
+  }
+}
