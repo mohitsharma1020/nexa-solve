@@ -33,12 +33,18 @@ export async function POST(request) {
     // Offload processing or handle quickly
     // For Netlify Functions (sync execution), we handle it directly but keep it fast.
     
+    if (topic === 'orders/create' || topic === 'orders/updated' || topic === 'orders/paid') {
+      await syncOrderToFirebase(payload);
+    }
+    
     if (topic === 'orders/paid') {
       await handleOrderPaid(payload);
     } else if (topic === 'orders/fulfilled') {
       await handleOrderFulfilled(payload);
+      await syncOrderToFirebase(payload); // Update status in Firebase
     } else if (topic === 'orders/cancelled' || topic === 'refunds/create') {
       await handleOrderCancelled(payload);
+      await syncOrderToFirebase(payload); // Update status in Firebase
     }
 
     return NextResponse.json({ message: 'Webhook processed' }, { status: 200 });
@@ -50,6 +56,49 @@ export async function POST(request) {
 }
 
 // ── Webhook Handlers ──────────────────────────────────────────────
+
+async function syncOrderToFirebase(order) {
+  if (!adminDb) return;
+  const email = order.email || order.customer?.email;
+  if (!email) return;
+
+  const orderId = order.id.toString();
+  
+  // Format order to match what frontend expects
+  const formattedOrder = {
+    id: `gid://shopify/Order/${orderId}`,
+    name: order.name,
+    createdAt: order.created_at,
+    financialStatus: order.financial_status?.toUpperCase() || 'PENDING',
+    fulfillmentStatus: order.fulfillment_status?.toUpperCase() || 'UNFULFILLED',
+    statusPageUrl: order.order_status_url,
+    totalPrice: {
+      amount: order.current_total_price,
+      currencyCode: order.currency,
+    },
+    lineItems: {
+      edges: (order.line_items || []).map(li => ({
+        node: {
+          title: li.title,
+          quantity: li.quantity,
+          image: {
+            // Shopify webhooks don't always include variant images deeply, 
+            // but we save what we can or leave it null for the frontend fallback.
+            url: null 
+          }
+        }
+      }))
+    },
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    await adminDb.collection('users').doc(email).collection('orders').doc(orderId).set(formattedOrder, { merge: true });
+    console.log(`[Order Sync] Successfully synced order ${order.name} to Firebase for ${email}`);
+  } catch (err) {
+    console.error(`[Order Sync] Failed to sync order ${order.name} to Firebase:`, err);
+  }
+}
 
 async function handleOrderPaid(order) {
   // Check for referral cart attributes
