@@ -5,6 +5,7 @@ import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
+import ReferralTracker from './components/ReferralTracker';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -59,6 +60,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <Navbar />
             <CartDrawer />
+            <ReferralTracker />
             <main>{children}</main>
             <Footer />
           </CartProvider>

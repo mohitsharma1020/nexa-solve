@@ -44,6 +44,17 @@ export default function CartDrawer() {
     processCheckout,
   } = useCart();
 
+  const [hasReferral, setHasReferral] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const refCode = localStorage.getItem('nexa_referral_code');
+      if (refCode) {
+        setHasReferral(true);
+      }
+    }
+  }, [isDrawerOpen]);
+
   const promoIsApplied = appliedPromoCode === 'ANTARCTICA';
 
   useEffect(() => {
@@ -145,8 +156,17 @@ export default function CartDrawer() {
                   {/* Offer Card 1 */}
                   <div className={styles.offerCard} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f5f5f7', padding: '12px', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--color-border)' }}>
                     <div>
-                      <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>ANTARCTICA</strong>
-                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Use code at checkout for ₹250 OFF.</p>
+                      {hasReferral ? (
+                        <>
+                          <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px', color: '#0066FF' }}>Referral Benefit Unlocked</strong>
+                          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>You received ₹200 OFF through a referral.</p>
+                        </>
+                      ) : (
+                        <>
+                          <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>ANTARCTICA</strong>
+                          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Use code at checkout for ₹1250 OFF.</p>
+                        </>
+                      )}
                     </div>
                     <button 
                       className={styles.offerCardBtn}
@@ -159,6 +179,12 @@ export default function CartDrawer() {
                       Copy Code
                     </button>
                   </div>
+
+                  {hasReferral && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', textAlign: 'center', marginBottom: '12px' }}>
+                      Discount is applied securely at Shopify checkout.
+                    </div>
+                  )}
 
                   {/* Offer Card 2: 10-Minute Timer (Imported Component) */}
                   <div style={{ background: '#f5f5f7', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)' }}>

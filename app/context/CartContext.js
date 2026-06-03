@@ -373,7 +373,22 @@ export function CartProvider({ children }) {
           return;
         }
 
-        const shopifyCart = await createShopifyCart(lines);
+        // Gather Referral Data
+        const attributes = [];
+        const discountCodes = [];
+        
+        if (typeof window !== 'undefined') {
+          const refCode = localStorage.getItem('nexa_referral_code');
+          if (refCode) {
+            attributes.push({ key: 'referralCode', value: refCode });
+            attributes.push({ key: 'referralSource', value: 'nexa_referral' });
+            
+            const discountCode = process.env.NEXT_PUBLIC_REFERRAL_DISCOUNT_CODE || 'ANTARCTICA';
+            discountCodes.push(discountCode);
+          }
+        }
+
+        const shopifyCart = await createShopifyCart(lines, attributes, discountCodes);
         if (shopifyCart && shopifyCart.cart && shopifyCart.cart.checkoutUrl) {
           console.log('[Shopify Checkout] Cart ID:', shopifyCart.cart.id);
           console.log('[Shopify Checkout] Redirecting to URL:', shopifyCart.cart.checkoutUrl);

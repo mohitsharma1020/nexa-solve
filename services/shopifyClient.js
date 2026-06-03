@@ -194,7 +194,7 @@ function transformShopifyProduct(node) {
 /**
  * Create a new Shopify Cart
  */
-export async function createShopifyCart(lines = []) {
+export async function createShopifyCart(lines = [], attributes = [], discountCodes = []) {
   const mutation = `
     mutation cartCreate($input: CartInput) {
       cartCreate(input: $input) {
@@ -231,7 +231,15 @@ export async function createShopifyCart(lines = []) {
     }
   `;
 
-  const variables = { input: { lines } };
+  const input = { lines };
+  if (attributes && attributes.length > 0) {
+    input.attributes = attributes;
+  }
+  if (discountCodes && discountCodes.length > 0) {
+    input.discountCodes = discountCodes;
+  }
+
+  const variables = { input };
   const response = await shopifyFetch({ query: mutation, variables });
   return response?.data?.cartCreate;
 }
