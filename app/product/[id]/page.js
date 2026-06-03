@@ -141,7 +141,26 @@ export default function ProductPage({ params: paramsPromise }) {
     ? (product.originalPrice - product.price).toFixed(2)
     : null;
 
-  const relatedProducts = products.filter(p => p.id !== product.id).slice(0, 4);
+  const mappedAffiliates = affiliateProducts.map(p => ({
+    id: p.id,
+    title: p.productName || p.title,
+    slug: p.id,
+    price: null,
+    priceDisplay: p.priceDisplay || 'Check on Amazon',
+    originalPrice: null,
+    rating: p.ratingDisplay || 4.5,
+    reviews: 120,
+    category: 'affiliate',
+    categoryLabel: p.category || 'Recommended',
+    image: p.image,
+    images: [p.image],
+    badge: p.badge || 'Amazon Pick',
+    shortDescription: p.shortName || p.description,
+    description: p.description,
+    affiliateLink: p.affiliateLink || p.amazonLink,
+    isAffiliate: true,
+  }));
+  const relatedProducts = mappedAffiliates.filter(p => p.id !== product.id).slice(0, 4);
 
   const specs = product.specs || [
     { label: 'Category', value: product.categoryLabel || 'General' },
@@ -515,28 +534,45 @@ export default function ProductPage({ params: paramsPromise }) {
       {/* Sticky Mobile Bar */}
       <div className={styles.mobileBar}>
         <div className={styles.mobileBarPrice}>
-          <span className={styles.mobileBarCurrent}>₹{product.price.toLocaleString('en-IN')}</span>
+          <span className={styles.mobileBarCurrent}>
+            {product.price ? `₹${product.price.toLocaleString('en-IN')}` : product.priceDisplay || 'Check on Amazon'}
+          </span>
           {product.originalPrice && (
             <span className={styles.mobileBarOriginal}>₹{product.originalPrice.toLocaleString('en-IN')}</span>
           )}
         </div>
-        <button 
-          className={styles.mobileBarBtn}
-          onClick={handleAddToCart}
-          disabled={buttonState !== 'default'}
-          style={{ background: buttonState === 'success' ? 'var(--color-success)' : '' }}
-        >
-          {buttonState === 'default' ? (
-            <>
-              <ShoppingCart size={18} />
-              Add to Cart
-            </>
-          ) : buttonState === 'loading' ? (
-            <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
-          ) : (
-            <CheckCircle2 size={18} />
-          )}
-        </button>
+        {product.isAffiliate ? (
+          <a 
+            href={product.affiliateLink || product.amazonLink}
+            target="_blank" 
+            rel="nofollow sponsored noopener noreferrer"
+            className={styles.mobileBarBtn}
+            style={{ backgroundColor: '#232F3E', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#fff' }}
+          >
+            <ShoppingCart size={18} />
+            Buy from Amazon
+          </a>
+        ) : process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' && !product.shopifyVariantId ? (
+          <button className={styles.mobileBarBtn} disabled style={{ opacity: 0.6, backgroundColor: '#e8e8ed', color: '#1d1d1f' }}>Not Available</button>
+        ) : (
+          <button 
+            className={styles.mobileBarBtn}
+            onClick={handleAddToCart}
+            disabled={buttonState !== 'default'}
+            style={{ background: buttonState === 'success' ? 'var(--color-success)' : '' }}
+          >
+            {buttonState === 'default' ? (
+              <>
+                <ShoppingCart size={18} />
+                Add to Cart
+              </>
+            ) : buttonState === 'loading' ? (
+              <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+            ) : (
+              <CheckCircle2 size={18} />
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
