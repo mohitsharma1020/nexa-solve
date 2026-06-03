@@ -244,7 +244,7 @@ export default function CartDrawer() {
                     <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginBottom: '12px', lineHeight: 1.4 }}>
                       Refer friends or complete your first referral order to earn <strong>₹200 Polar Credits</strong>.
                     </p>
-                    <Link href="/referral" onClick={() => toggleDrawer(false)} style={{
+                    <Link href="/refer" onClick={() => toggleDrawer(false)} style={{
                       display: 'block', textAlign: 'center', width: '100%', padding: '10px', borderRadius: '8px', 
                       fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s',
                       background: 'transparent', color: 'var(--color-accent)', border: '1px solid var(--color-accent)', textDecoration: 'none'

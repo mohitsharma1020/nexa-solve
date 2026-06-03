@@ -43,7 +43,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/shop', label: 'Shop All' },
     { href: '/shop', label: 'Categories' },
-    { href: '/referral', label: 'Refer & Earn' },
+    { href: '/refer', label: 'Refer & Earn' },
     { href: '/account/credits', label: 'My Credits' },
   ];
 

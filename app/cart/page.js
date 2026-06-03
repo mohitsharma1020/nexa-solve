@@ -278,8 +278,8 @@ export default function CartPage() {
                 <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', margin: 0, lineHeight: 1.5, marginBottom: '12px' }}>
                   Refer friends or complete your first referral order to earn ₹200 Polar Credits.
                 </p>
-                <Link href="/referral" style={{
-                  display: 'block', textAlign: 'center', width: '100%', padding: '10px', borderRadius: '8px', 
+                <Link href="/refer" style={{
+                  display: 'inline-block', textAlign: 'center', width: '100%', padding: '10px', borderRadius: '8px', 
                   fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s',
                   background: 'transparent', color: 'var(--color-accent)', border: '1px solid var(--color-accent)', textDecoration: 'none'
                 }}>

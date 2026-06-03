@@ -12,6 +12,7 @@ import { authService } from '../../services/authService';
 import { auth, storage } from '../../services/firebaseClient';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useWishlist } from '../context/WishlistContext';
+import ReferralWidget from '../components/ReferralWidget';
 import styles from './Account.module.css';
 
 export default function AccountPage() {
@@ -504,21 +505,10 @@ export default function AccountPage() {
                   </div>
                 </div>
 
+
+
                 {/* Refer & Earn Banner */}
-                <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ background: 'rgba(0,102,255,0.2)', padding: '8px', borderRadius: '50%', color: '#0066FF' }}>
-                      <Gift size={24} />
-                    </div>
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Give ₹200, Get ₹200</h3>
-                      <p style={{ margin: '4px 0 0 0', color: '#a1a1aa', fontSize: '0.9rem' }}>Refer friends and earn Polar Credits.</p>
-                    </div>
-                  </div>
-                  <Link href="/refer" style={{ alignSelf: 'flex-start', background: '#0066FF', color: '#fff', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'opacity 0.2s' }}>
-                    Open Refer & Earn
-                  </Link>
-                </div>
+                <ReferralWidget />
               </div>
             )}
 

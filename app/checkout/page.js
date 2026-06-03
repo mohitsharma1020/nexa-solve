@@ -227,7 +227,7 @@ export default function CheckoutPage() {
             Track My Order
           </Link>
           <Link
-            href="/referral"
+            href="/refer"
             style={{
               display: 'block', background: 'transparent', color: 'var(--color-accent)',
               padding: '13px 28px', borderRadius: '12px', fontWeight: 600,
