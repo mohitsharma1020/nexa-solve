@@ -66,7 +66,16 @@ export function CartProvider({ children }) {
 
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
-        setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+        const safeCart = Array.isArray(parsedCart) ? parsedCart : [];
+        const validCart = safeCart.filter(item => !!item.shopifyVariantId);
+        
+        if (validCart.length < safeCart.length) {
+          console.warn('CartContext: Purged legacy/mock items without shopifyVariantId');
+          setTimeout(() => {
+            alert('Some unavailable products were removed from your cart.');
+          }, 500);
+        }
+        setCartItems(validCart);
       }
       if (savedPromo) setDiscountCode(savedPromo);
       if (savedAppliedPromo) setAppliedPromoCode(savedAppliedPromo);
@@ -126,7 +135,11 @@ export function CartProvider({ children }) {
 
   // ── addToCart: start timer only on FIRST item added to empty cart ──
   const addToCart = (product, quantity = 1) => {
-    if (process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' && !product.shopifyVariantId && !product.amazonLink) {
+    if (product.isAffiliate || product.affiliateLink) {
+      alert("This is an Amazon affiliate product and must be purchased on Amazon.");
+      return;
+    }
+    if (!product.shopifyVariantId) {
       alert("This product is not available for checkout yet.");
       return;
     }

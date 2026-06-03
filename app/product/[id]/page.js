@@ -7,7 +7,7 @@ import {
   ShieldCheck, RefreshCcw, Award, Clock, ChevronDown,
   Minus, Plus, Zap, Package, CircleCheck, Loader2, Heart
 } from 'lucide-react';
-import { products } from '../../data/products';
+import { affiliateProducts } from '../../data/affiliateProducts';
 import ProductCard from '../../components/ProductCard';
 import PhotoReviewForm from '../../components/PhotoReviewForm';
 import styles from './product.module.css';
@@ -18,26 +18,48 @@ export default function ProductPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const slugTarget = (params.id || '').toLowerCase();
   
-  const [product, setProduct] = useState(
-    products.find(p => (p.slug || '').toLowerCase() === slugTarget || String(p.id) === slugTarget)
-  );
-  const [loading, setLoading] = useState(false);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true') {
-      setLoading(true);
-      import('../../../services/shopifyClient').then(({ getShopifyProductByHandle }) => {
-        getShopifyProductByHandle(slugTarget).then((shopifyProduct) => {
-          if (shopifyProduct) {
-            setProduct(shopifyProduct);
-          }
-          setLoading(false);
-        }).catch(err => {
-          console.error('Failed to load shopify product', err);
-          setLoading(false);
-        });
+    // 1. Check if it's an affiliate product
+    const affiliateTarget = affiliateProducts.find(p => p.id === slugTarget);
+    if (affiliateTarget) {
+      setProduct({
+        id: affiliateTarget.id,
+        title: affiliateTarget.productName || affiliateTarget.title,
+        slug: affiliateTarget.id,
+        price: null,
+        priceDisplay: affiliateTarget.priceDisplay || 'Check on Amazon',
+        originalPrice: null,
+        rating: affiliateTarget.ratingDisplay || 4.5,
+        reviews: 120,
+        category: 'affiliate',
+        categoryLabel: affiliateTarget.category || 'Recommended',
+        image: affiliateTarget.image,
+        images: [affiliateTarget.image],
+        badge: affiliateTarget.badge || 'Amazon Pick',
+        shortDescription: affiliateTarget.shortName || affiliateTarget.description,
+        description: affiliateTarget.description,
+        affiliateLink: affiliateTarget.affiliateLink || affiliateTarget.amazonLink,
+        isAffiliate: true,
       });
+      setLoading(false);
+      return;
     }
+
+    // 2. Fetch from Shopify
+    import('../../../services/shopifyClient').then(({ getShopifyProductByHandle }) => {
+      getShopifyProductByHandle(slugTarget).then((shopifyProduct) => {
+        if (shopifyProduct) {
+          setProduct(shopifyProduct);
+        }
+        setLoading(false);
+      }).catch(err => {
+        console.error('Failed to load shopify product', err);
+        setLoading(false);
+      });
+    });
   }, [slugTarget]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -353,14 +375,14 @@ export default function ProductPage({ params: paramsPromise }) {
           </div>
 
           {/* Action Buttons */}
-          {product.amazonLink ? (
+          {product.isAffiliate ? (
             <div style={{ display: 'flex', gap: '12px' }}>
               <a 
-                href={product.amazonLink} 
+                href={product.affiliateLink || product.amazonLink} 
                 target="_blank" 
-                rel="noopener noreferrer"
+                rel="nofollow sponsored noopener noreferrer"
                 className={styles.buyNowBtn} 
-                style={{ flex: 1, textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                style={{ flex: 1, textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backgroundColor: '#232F3E', color: '#fff', border: 'none' }}
               >
                 <ShoppingCart size={20} />
                 Buy from Amazon

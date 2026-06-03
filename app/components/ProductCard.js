@@ -120,14 +120,20 @@ export default function ProductCard({ product }) {
 
         {/* Price Row */}
         <div className={styles.priceRow}>
-          <span className={styles.price}>₹{(product.price || 0).toLocaleString('en-IN')}</span>
-          {product.originalPrice && (
-            <span className={styles.originalPrice}>
-              ₹{product.originalPrice.toLocaleString('en-IN')}
-            </span>
-          )}
-          {discount && (
-            <span className={styles.discountBadge}>-{discount}%</span>
+          {product.isAffiliate ? (
+            <span className={styles.price} style={{ fontSize: '1rem', fontWeight: 500, color: '#0066FF' }}>{product.priceDisplay || 'Check on Amazon'}</span>
+          ) : (
+            <>
+              <span className={styles.price}>₹{(product.price || 0).toLocaleString('en-IN')}</span>
+              {product.originalPrice && (
+                <span className={styles.originalPrice}>
+                  ₹{product.originalPrice.toLocaleString('en-IN')}
+                </span>
+              )}
+              {discount && (
+                <span className={styles.discountBadge}>-{discount}%</span>
+              )}
+            </>
           )}
         </div>
 
@@ -140,12 +146,13 @@ export default function ProductCard({ product }) {
 
         {/* Add to Cart */}
         <div className={`${styles.addToCartWrapper} ${isHovered ? styles.addToCartVisible : ''}`}>
-          {product.amazonLink ? (
+          {product.isAffiliate ? (
             <a 
-              href={product.amazonLink} 
+              href={product.affiliateLink || product.amazonLink} 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="nofollow sponsored noopener noreferrer"
               className={`${styles.addToCart}`}
+              style={{ backgroundColor: '#232F3E' }}
             >
               <ShoppingCart size={16} />
               Buy from Amazon

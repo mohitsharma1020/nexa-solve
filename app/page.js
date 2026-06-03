@@ -20,12 +20,50 @@ import CountdownTimer from './components/CountdownTimer';
 import NewsletterForm from './components/NewsletterForm';
 import PolarCollection from './components/PolarCollection';
 import TravelGearSection from './components/TravelGearSection';
-import { products, categories, reviews } from './data/products';
+import { categories, reviews } from './data/products';
+import { affiliateProducts } from './data/affiliateProducts';
+import { getShopifyProducts } from '../services/shopifyClient';
 import styles from './page.module.css';
 
-export default function Home() {
-  const trendingProducts = products.slice(0, 4);
-  const featuredProduct = products[0];
+export default async function Home() {
+  const shopifyProducts = await getShopifyProducts(10);
+  
+  const mappedAffiliates = affiliateProducts.map(p => ({
+    id: p.id,
+    title: p.productName || p.title,
+    slug: p.id,
+    price: null,
+    priceDisplay: p.priceDisplay || 'Check on Amazon',
+    originalPrice: null,
+    rating: p.ratingDisplay || 4.5,
+    reviews: 120,
+    category: 'affiliate',
+    categoryLabel: p.category || 'Recommended',
+    image: p.image,
+    images: [p.image],
+    badge: p.badge || 'Amazon Pick',
+    shortDescription: p.shortName || p.description,
+    description: p.description,
+    affiliateLink: p.affiliateLink || p.amazonLink,
+    isAffiliate: true,
+  }));
+
+  const allProducts = [...shopifyProducts, ...mappedAffiliates];
+  
+  if (shopifyProducts.length === 0) {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 24px' }}>
+        <Package size={64} style={{ color: '#0066FF', marginBottom: '24px' }} />
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '16px' }}>Products are being updated.</h1>
+        <p style={{ fontSize: '1.1rem', color: '#6e6e73', maxWidth: '500px' }}>
+          We are currently syncing our premium catalog with our fulfillment centers. Please check back soon.
+        </p>
+      </div>
+    );
+  }
+
+  const trendingProducts = allProducts.slice(0, 4);
+  const featuredProduct = allProducts[0];
 
   return (
     <main>
@@ -84,15 +122,15 @@ export default function Home() {
                 <p className={styles.heroCardLabel}>Featured Product</p>
                 <h3 className={styles.heroCardTitle}>{featuredProduct.title}</h3>
                 <div className={styles.heroCardPrice}>
-                  <span className={styles.heroCardCurrentPrice}>
-                    ₹{featuredProduct.price}
+                <span className={styles.heroCardCurrentPrice}>
+                  {featuredProduct.price ? `₹${featuredProduct.price}` : featuredProduct.priceDisplay || 'Check Amazon'}
+                </span>
+                {featuredProduct.originalPrice && (
+                  <span className={styles.heroCardOriginalPrice}>
+                    ₹{featuredProduct.originalPrice}
                   </span>
-                  {featuredProduct.originalPrice && (
-                    <span className={styles.heroCardOriginalPrice}>
-                      ₹{featuredProduct.originalPrice}
-                    </span>
-                  )}
-                </div>
+                )}
+              </div>
               </div>
             </div>
           </div>
@@ -232,7 +270,7 @@ export default function Home() {
                 {featuredProduct.description}
               </p>
               <ul className={styles.spotlightBenefits}>
-                {featuredProduct.benefits.slice(0, 3).map((benefit, i) => (
+                {(featuredProduct.benefits || ['Premium Quality', 'Fast Shipping', 'Secure Checkout']).slice(0, 3).map((benefit, i) => (
                   <li key={i} className={styles.spotlightBenefitItem}>
                     <CheckCircle2
                       size={20}
@@ -244,12 +282,12 @@ export default function Home() {
               </ul>
               <div className={styles.spotlightPricing}>
                 <span className={styles.spotlightCurrentPrice}>
-                  ${featuredProduct.price}
+                  {featuredProduct.price ? `₹${featuredProduct.price}` : featuredProduct.priceDisplay || 'Check Amazon'}
                 </span>
-                {featuredProduct.originalPrice && (
+                {featuredProduct.originalPrice && featuredProduct.price && (
                   <>
                     <span className={styles.spotlightOriginalPrice}>
-                      ${featuredProduct.originalPrice}
+                      ₹{featuredProduct.originalPrice}
                     </span>
                     <span className={styles.spotlightDiscount}>
                       Save{' '}
