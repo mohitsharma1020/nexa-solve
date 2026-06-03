@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wallet, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Wallet, Clock, CheckCircle2, AlertCircle, Share2 } from 'lucide-react';
 import styles from './page.module.css';
 import { referralService } from '../../../services/referralService';
 
@@ -34,6 +34,12 @@ export default function CreditsDashboard() {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareOnWhatsApp = () => {
+    if (!referralLink) return;
+    const text = `Hey! I thought you'd love NexaSolve. Use my link and the code ANTARCTICA to get ₹200 OFF your first order! ${referralLink}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const formatDate = (isoString) => {
@@ -148,6 +154,13 @@ export default function CreditsDashboard() {
                 {copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
+              
+            <button 
+              onClick={shareOnWhatsApp}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s', marginTop: '12px' }}
+            >
+              <Share2 size={16} /> Share via WhatsApp
+            </button>
           </div>
 
           <div className={styles.helpCard}>

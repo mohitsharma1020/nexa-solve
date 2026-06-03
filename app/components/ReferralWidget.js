@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Gift, Copy, CheckCircle2 } from 'lucide-react';
+import { Gift, Copy, CheckCircle2, Share2 } from 'lucide-react';
 import { auth } from '../../services/firebaseClient';
 
 export default function ReferralWidget() {
@@ -49,6 +49,11 @@ export default function ReferralWidget() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const shareOnWhatsApp = () => {
+    const text = `Hey! I thought you'd love NexaSolve. Use my link and the code ANTARCTICA to get ₹200 OFF your first order! ${referralLink}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
   return (
     <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)', borderRadius: '16px', padding: '24px', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
@@ -63,16 +68,25 @@ export default function ReferralWidget() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-        <div style={{ flex: 1, padding: '8px 12px', fontSize: '0.9rem', color: '#e5e7eb', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
-          {referralLink}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ flex: 1, padding: '8px 12px', fontSize: '0.9rem', color: '#e5e7eb', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+            {referralLink}
+          </div>
+          <button 
+            onClick={copyToClipboard}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: copied ? '#10b981' : '#0066FF', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+          >
+            {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
         </div>
+        
         <button 
-          onClick={copyToClipboard}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', background: copied ? '#10b981' : '#0066FF', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+          onClick={shareOnWhatsApp}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s' }}
         >
-          {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-          {copied ? 'Copied' : 'Copy'}
+          <Share2 size={16} /> Share via WhatsApp
         </button>
       </div>
     </div>
