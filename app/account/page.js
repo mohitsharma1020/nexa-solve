@@ -3,16 +3,12 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  User, Package, Gift, Copy, LogOut, CheckCircle2, 
-  Star, Heart, Search, MapPin, Search as SearchIcon, Loader2
+  User, Package, LogOut, Heart, Search, MapPin, Search as SearchIcon, Loader2
 } from 'lucide-react';
 import { dbService } from '../../services/dbService';
-import { photoReviewService } from '../../services/photoReviewService';
 import { authService } from '../../services/authService';
-import { auth, storage } from '../../services/firebaseClient';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { auth } from '../../services/firebaseClient';
 import { useWishlist } from '../context/WishlistContext';
-import ReferralWidget from '../components/ReferralWidget';
 import styles from './Account.module.css';
 
 export default function AccountPage() {
@@ -31,58 +27,6 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const { savedItems } = useWishlist();
 
-  // Shopify Customer Account API State
-  const [shopifyOrders, setShopifyOrders] = useState([]);
-  const [isShopifyAuth, setIsShopifyAuth] = useState(false);
-  const [shopifyOrdersLoading, setShopifyOrdersLoading] = useState(true);
-  const [shopifyOrdersError, setShopifyOrdersError] = useState('');
-
-  // Fetch Shopify Orders when tab is active (Orders or Reviews tab)
-  useEffect(() => {
-    if ((activeTab === 'orders' || activeTab === 'reviews') && process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' && !isShopifyAuth) {
-      const fetchShopifyOrders = async () => {
-        setShopifyOrdersLoading(true);
-        setShopifyOrdersError('');
-        try {
-          const user = auth.currentUser;
-          if (!user) {
-            setShopifyOrdersError('Please sign in to view your orders.');
-            setShopifyOrdersLoading(false);
-            return;
-          }
-          
-          const idToken = await user.getIdToken();
-          
-          const res = await fetch('/api/shopify/orders', {
-            headers: {
-              'Authorization': `Bearer ${idToken}`
-            }
-          });
-          
-          if (res.ok) {
-            const data = await res.json();
-            setShopifyOrders(data.orders || []);
-            setIsShopifyAuth(true);
-          } else {
-            // Also parse the error message if it's JSON from our backend
-            try {
-              const errData = await res.json();
-              setShopifyOrdersError(errData.error || 'Failed to load your Shopify orders.');
-            } catch (e) {
-              setShopifyOrdersError('Failed to load your Shopify orders. Please try again later.');
-            }
-          }
-        } catch (error) {
-          console.error("Fetch orders error:", error);
-          setShopifyOrdersError(`Connection Error: ${error.message || 'An error occurred while communicating with Shopify.'}`);
-        } finally {
-          setShopifyOrdersLoading(false);
-        }
-      };
-      fetchShopifyOrders();
-    }
-  }, [activeTab, isShopifyAuth, userProfile]);
-
   // Phase 5A: Review Eligibility State
   const [eligibleReviewProducts, setEligibleReviewProducts] = useState([]);
   const [reviewPhotos, setReviewPhotos] = useState([]);
@@ -91,32 +35,10 @@ export default function AccountPage() {
   const [reviewRating, setReviewRating] = useState(5);
 
   useEffect(() => {
-    if (!shopifyOrders || !userReviews) return;
-    const eligible = [];
-    shopifyOrders.forEach(order => {
-      // Only check paid/completed orders
-      if (order.financialStatus === 'PAID' || order.fulfillmentStatus === 'FULFILLED') {
-        const items = order.lineItems?.edges || [];
-        items.forEach(({ node: item }) => {
-          const productId = item.variant?.product?.id?.split('/').pop() || item.title;
-          const isReviewed = userReviews.some(
-            r => r.orderId === order.id.split('/').pop() && r.productId === productId
-          );
-          if (!isReviewed) {
-            eligible.push({
-              orderId: order.id.split('/').pop(),
-              orderName: order.name,
-              product: item.variant?.product || null,
-              productId: productId,
-              productTitle: item.title,
-              image: item.variant?.image?.url || null
-            });
-          }
-        });
-      }
-    });
-    setEligibleReviewProducts(eligible);
-  }, [shopifyOrders, userReviews]);
+    // Orders are now managed strictly off-site on Shopify.
+    // For now, eligible reviews are disabled or manually assigned.
+    setEligibleReviewProducts([]);
+  }, [userReviews]);
 
   const handleReviewSubmit = async () => {
     if (!selectedProductForReview) return;
@@ -407,9 +329,6 @@ export default function AccountPage() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: <User size={18} /> },
     { id: 'orders', label: 'Orders', icon: <Package size={18} /> },
-    { id: 'credits', label: 'Polar Credits', icon: <Gift size={18} /> },
-    { id: 'referral', label: 'Refer & Earn', icon: <User size={18} /> },
-    { id: 'reviews', label: 'Review Rewards', icon: <Star size={18} /> },
     { id: 'saved', label: 'Saved Items', icon: <Heart size={18} /> },
     { id: 'profile', label: 'Profile', icon: <User size={18} /> },
   ];
@@ -480,15 +399,7 @@ export default function AccountPage() {
                   <div className={styles.cardSubtext}>Awaiting approval</div>
                 </div>
 
-                <div className={`${styles.summaryCard} ${styles.statsCard}`} onClick={() => setActiveTab('orders')}>
-                  <div className={styles.cardHeader}>
-                    <Package size={20} className={styles.cardIcon} />
-                    <span>Total Orders</span>
-                  </div>
-                  <div className={styles.cardValue}>{totalOrders}</div>
-                </div>
-
-                <div className={`${styles.summaryCard} ${styles.statsCard}`} onClick={() => setActiveTab('reviews')}>
+                  <div className={`${styles.summaryCard} ${styles.statsCard}`} onClick={() => setActiveTab('reviews')}>
                   <div className={styles.cardHeader}>
                     <Star size={20} className={styles.cardIcon} />
                     <span>Review Rewards</span>
@@ -517,266 +428,16 @@ export default function AccountPage() {
             <div className={`${styles.tabPane} ${styles.fadeIn}`}>
               <h2 className={styles.sectionTitle}>Order History</h2>
               
-              {process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' ? (
-                shopifyOrdersLoading ? (
-                  <div className={styles.emptyState}>
-                    <Loader2 size={32} className={styles.loadingSpinner} style={{ animation: 'spin 1s linear infinite' }} />
-                    <p style={{ marginTop: '16px' }}>Loading your Shopify orders...</p>
-                  </div>
-                ) : shopifyOrdersError ? (
-                  <div className={styles.emptyState}>
-                    <h3 className={styles.emptyTitle}>Error</h3>
-                    <p className={styles.emptyDesc} style={{ color: 'var(--color-error)' }}>{shopifyOrdersError}</p>
-                    <button onClick={() => window.location.reload()} className={styles.outlineBtn} style={{ marginTop: '16px', display: 'inline-block' }}>
-                      Try Again
-                    </button>
-                  </div>
-                ) : shopifyOrders.length === 0 ? (
-                  <div className={styles.emptyState}>
-                    <Package size={48} className={styles.emptyIcon} />
-                    <h3 className={styles.emptyTitle}>No Shopify orders found</h3>
-                    <p className={styles.emptyDesc}>Looks like you haven't placed any orders yet through Shopify.</p>
-                    <Link href="/shop" className={styles.primaryBtn}>Start Shopping</Link>
-                  </div>
-                ) : (
-                  <div className={styles.orderCardsList}>
-                    {shopifyOrders.map(order => (
-                      <div key={order.id} className={styles.orderCard}>
-                        <div className={styles.orderCardHeader}>
-                          <div className={styles.orderMeta}>
-                            <span className={styles.orderId}>Order {order.name}</span>
-                            <span className={styles.orderDate}>Date: {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                          </div>
-                          <div className={styles.orderStatusBadge}>
-                            {order.fulfillmentStatus || order.financialStatus}
-                          </div>
-                        </div>
-                        
-                        <div className={styles.orderCardBody}>
-                          <div className={styles.orderTotal}>
-                            <span className={styles.totalLabel}>Total:</span>
-                            <span className={styles.totalValue}>{order.totalPrice?.currencyCode === 'INR' ? '₹' : order.totalPrice?.currencyCode}{order.totalPrice?.amount}</span>
-                          </div>
-                          
-                          <div className={styles.orderItemsSection}>
-                            <span className={styles.itemsLabel}>Items:</span>
-                            <div className={styles.orderItemsList}>
-                              {order.lineItems?.edges?.map((edge, idx) => (
-                                <div key={idx} className={styles.orderItemLine}>
-                                  <span className={styles.orderItemTitle}>{edge.node.title}</span>
-                                  <span className={styles.orderItemQty}> × {edge.node.quantity}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className={styles.orderCardFooter}>
-                          <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className={`${styles.actionBtn} ${styles.solidBtn}`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-                            View / Track Order
-                          </a>
-                        </div>
-                      </div>
-                    ))}
-                    <div style={{ textAlign: 'center', marginTop: '24px' }}>
-                       <span style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>Orders automatically synced via {userProfile?.email}</span>
-                    </div>
-                  </div>
-                )
-              ) : totalOrders === 0 ? (
-                <div className={styles.emptyState}>
-                  <Package size={48} className={styles.emptyIcon} />
-                  <h3 className={styles.emptyTitle}>No Orders Yet</h3>
-                  <p className={styles.emptyDesc}>Looks like you haven't placed an order yet.</p>
-                  <Link href="/shop" className={styles.primaryBtn}>Start Shopping</Link>
-                </div>
-              ) : (
-                <div className={styles.orderCardsList}>
-                  {userProfile.orders.map(order => (
-                    <div key={order.orderId} className={styles.orderCard}>
-                      <div className={styles.orderCardHeader}>
-                        <div className={styles.orderMeta}>
-                          <span className={styles.orderId}>Order #{order.orderId}</span>
-                          <span className={styles.orderDate}>Date: {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                        </div>
-                        <div className={styles.orderStatusBadge}>
-                          {order.orderStatus}
-                        </div>
-                      </div>
-                      
-                      <div className={styles.orderCardBody}>
-                        <div className={styles.orderTotal}>
-                          <span className={styles.totalLabel}>Total:</span>
-                          <span className={styles.totalValue}>₹{order.finalAmount}</span>
-                        </div>
-                        
-                        <div className={styles.orderItemsSection}>
-                          <span className={styles.itemsLabel}>Items:</span>
-                          {renderOrderItems(order.items)}
-                        </div>
-                      </div>
-                      
-                      <div className={styles.orderCardFooter}>
-                        <button className={`${styles.actionBtn} ${styles.outlineBtn}`}>View Details</button>
-                        <button className={`${styles.actionBtn} ${styles.solidBtn}`}>Track Order</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB: CREDITS */}
-          {activeTab === 'credits' && (
-            <div className={`${styles.tabPane} ${styles.fadeIn}`}>
-              <h2 className={styles.sectionTitle}>Polar Credits</h2>
-              
-              <div className={styles.creditsDisplayCard}>
-                <div className={styles.creditBalance}>
-                  <span className={styles.creditLabel}>Available Credits</span>
-                  <span className={styles.creditAmount}>₹{userProfile.availableCredits || 0}</span>
-                </div>
-                <div className={styles.creditDivider}></div>
-                <div className={styles.creditSecondary}>
-                  <div className={styles.creditStat}>
-                    <span>Pending:</span> <strong>₹{userProfile.pendingCredits || 0}</strong>
-                  </div>
-                  <div className={styles.creditStat}>
-                    <span>Used:</span> <strong>₹{userProfile.usedCredits || 0}</strong>
-                  </div>
-                </div>
-              </div>
-
-              {(!userProfile.availableCredits && !userProfile.pendingCredits) && (
-                <div className={styles.creditsEmptyState}>
-                  <p>Earn credits by referring friends or submitting approved photo reviews.</p>
-                </div>
-              )}
-
-              <p className={styles.creditsDisclaimer}>
-                * Polar Credits are store credits only. They cannot be withdrawn, transferred, or converted into cash.
-              </p>
-            </div>
-          )}
-
-          {/* TAB: REFER & EARN */}
-          {activeTab === 'referral' && (
-            <div className={`${styles.tabPane} ${styles.fadeIn}`}>
-              <div className={styles.referralHeroCard}>
-                <h3 className={styles.referralTitle}>Give ₹200, Get ₹200</h3>
-                <p className={styles.referralSubtitle}>
-                  Your friend gets ₹200 OFF their first order. You earn ₹200 Polar Credits after their order is completed.
+              <div className={styles.emptyState} style={{ padding: '40px 20px', maxWidth: '600px', margin: '0 auto', background: 'var(--color-off-white)', borderRadius: '16px', textAlign: 'center' }}>
+                <Package size={48} className={styles.emptyIcon} style={{ margin: '0 auto 16px', color: 'var(--color-text-light)' }} />
+                <h3 className={styles.emptyTitle} style={{ fontSize: '1.2rem', marginBottom: '12px' }}>View Your Orders</h3>
+                <p className={styles.emptyDesc} style={{ fontSize: '0.95rem', lineHeight: '1.5', color: 'var(--color-text-light)', marginBottom: '24px' }}>
+                  Orders placed through website checkout are managed securely. Use the same email you used at checkout to sign in and view your order history, payment status, and delivery updates.
                 </p>
-                <p className={styles.referralExplainer}>
-                  Share your referral link. When your friend places and completes their first paid order, your ₹200 Polar Credits become active.
-                </p>
-                
-                <div className={styles.referralActionBox}>
-                  <span className={styles.referralCodeLabel}>Referral Code:</span>
-                  <code className={styles.referralCodeText}>{userProfile.referralCode}</code>
-                  <button onClick={copyReferral} className={styles.copyBtn}>
-                    {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />} 
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
-                </div>
+                <a href="https://bcz5qp-zj.myshopify.com/account" target="_blank" rel="noopener noreferrer" className={styles.primaryBtn} style={{ display: 'inline-flex', padding: '12px 24px', background: 'var(--color-accent)', color: '#fff', borderRadius: '8px', fontWeight: '500', textDecoration: 'none' }}>
+                  Sign in to View Orders
+                </a>
               </div>
-            </div>
-          )}
-
-          {/* TAB: REVIEWS */}
-          {activeTab === 'reviews' && (
-            <div className={`${styles.tabPane} ${styles.fadeIn}`}>
-              <h2 className={styles.sectionTitle}>Review Rewards ({reviewCount})</h2>
-              
-              {reviewCount === 0 && eligibleReviewProducts.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <Star size={48} className={styles.emptyIcon} />
-                  <h3 className={styles.emptyTitle}>No review rewards yet.</h3>
-                  <p className={styles.emptyDesc}>Complete a Shopify purchase to unlock products for review.</p>
-                </div>
-              ) : (
-                <div className={styles.reviewContainer}>
-                  {eligibleReviewProducts.length > 0 && (
-                    <div className={styles.eligibleSection}>
-                      <h3 className={styles.subsectionTitle}>Eligible for Review</h3>
-                      <p className={styles.subtitle}>Submit up to 5 photos to earn ₹5 Polar Credits per photo (Max ₹25 per product).</p>
-                      <div className={styles.orderCardsList}>
-                        {eligibleReviewProducts.map((ep, idx) => (
-                          <div key={idx} className={styles.reviewCard}>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                              {ep.image && <img src={ep.image} alt={ep.productTitle} style={{width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover'}}/>}
-                              <div>
-                                <strong>{ep.productTitle}</strong>
-                                <div style={{fontSize: '0.85rem', color: '#6e6e73'}}>Order {ep.orderName}</div>
-                              </div>
-                            </div>
-                            <button 
-                              className={`${styles.actionBtn} ${styles.solidBtn}`}
-                              onClick={() => setSelectedProductForReview(ep)}
-                            >
-                              Write Review
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedProductForReview && (
-                    <div className={styles.reviewModalOverlay}>
-                      <div className={styles.reviewModal}>
-                        <h3>Review: {selectedProductForReview.productTitle}</h3>
-                        <p>Upload photos to earn Polar Credits.</p>
-                        
-                        <div style={{margin: '1rem 0'}}>
-                          <label>Upload Photos (Max 5, 5MB each)</label>
-                          <input 
-                            type="file" 
-                            multiple 
-                            accept="image/jpeg, image/png, image/webp" 
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files);
-                              const validFiles = files.filter(f => 
-                                ['image/jpeg', 'image/png', 'image/webp'].includes(f.type) && 
-                                f.size <= 5 * 1024 * 1024
-                              ).slice(0, 5);
-                              setReviewPhotos(validFiles.map(f => ({ file: f, previewUrl: URL.createObjectURL(f) })));
-                            }} 
-                            style={{ display: 'block', margin: '0.5rem 0' }}
-                          />
-                          {reviewPhotos.length > 0 && (
-                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                              {reviewPhotos.map((photo, i) => (
-                                <img key={i} src={photo.previewUrl} alt={`preview ${i}`} style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333'}} />
-                              ))}
-                            </div>
-                          )}
-                          {reviewPhotos.length > 0 && <div style={{fontSize: '0.8rem', marginTop: '0.5rem', color: '#00d084'}}>{reviewPhotos.length} photo(s) selected.</div>}
-                        </div>
-
-                        <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
-                          <button onClick={() => setSelectedProductForReview(null)} className={styles.outlineBtn}>Cancel</button>
-                          <button onClick={handleReviewSubmit} disabled={reviewSubmitting} className={styles.solidBtn}>
-                            {reviewSubmitting ? <Loader2 className={styles.spinner} /> : 'Submit Review'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <h3 className={styles.subsectionTitle} style={{marginTop: '2rem'}}>Your Reviews</h3>
-                  <div className={styles.orderCardsList}>
-                    {userReviews.map(review => (
-                      <div key={review.reviewId} className={styles.reviewCard}>
-                        <div>Product: {review.productId}</div>
-                        <div>Status: {review.status}</div>
-                        <div>Reward: ₹{review.creditAmount || 0}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
 

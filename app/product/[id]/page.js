@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { affiliateProducts } from '../../data/affiliateProducts';
 import ProductCard from '../../components/ProductCard';
-import PhotoReviewForm from '../../components/PhotoReviewForm';
 import styles from './product.module.css';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -514,11 +513,6 @@ export default function ProductPage({ params: paramsPromise }) {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* ===== REVIEW & EARN POLAR CREDITS ===== */}
-      <div className={styles.reviewEarnSection}>
-        <PhotoReviewForm product={product} />
       </div>
 
       {/* Related Products */}

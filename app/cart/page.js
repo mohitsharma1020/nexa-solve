@@ -7,7 +7,6 @@ import {
   Truck, ShieldCheck, RefreshCcw
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import CartBonusTimer from '../components/CartBonusTimer';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -28,16 +27,9 @@ export default function CartPage() {
     promoMessage,
     actualDiscount,
     amountToFreeShipping,
-    availableCredits,
-    polarCreditsApplied,
-    polarCreditsMessage,
-    polarCreditsUsed,
-    togglePolarCredits,
     progressPercent,
     FREE_SHIPPING_THRESHOLD,
     isInitialized,
-    isCartBonusActive,
-    CART_BONUS_AMOUNT,
     appliedPromoCode,
     removePromo,
     processCheckout,
@@ -167,9 +159,6 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div className={styles.orderSummary}>
-          {/* ── Cart Bonus Timer ── */}
-          <CartBonusTimer variant="cart" />
-
           <h2 className={styles.summaryTitle}>Order Summary</h2>
 
           {isFirstOrder && shippingDiscount > 0 && (
@@ -216,79 +205,7 @@ export default function CartPage() {
             </div>
           )}
 
-          {polarCreditsUsed > 0 && (
-            <div className={styles.summaryRow} style={{ color: 'var(--color-success)' }}>
-              <span>Polar Credits</span>
-              <span className={styles.summaryValue}>-₹{polarCreditsUsed.toLocaleString('en-IN')}</span>
-            </div>
-          )}
-
-          {/* Cart Bonus Line Item */}
-          {(isCartBonusActive || hasCartBonusExpired) && (
-            <div className={styles.summaryRow} style={{
-              color: isCartBonusActive ? 'var(--color-success)' : '#9ca3af',
-              fontWeight: 600,
-              fontStyle: hasCartBonusExpired ? 'italic' : 'normal'
-            }}>
-              <span className={styles.summaryLabel}>10-Min Cart Bonus</span>
-              <span className={styles.summaryValue}>
-                {isCartBonusActive ? `-₹${CART_BONUS_AMOUNT}` : 'Expired'}
-              </span>
-            </div>
-          )}
-
-          <div className={styles.discountSection}>
-            {availableCredits > 0 ? (
-              <div style={{ marginBottom: '20px', padding: '16px', background: 'rgba(0, 102, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(0, 102, 255, 0.1)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>💎</span>
-                    <strong style={{ fontSize: '1rem', color: 'var(--color-primary)' }}>Polar Credits</strong>
-                  </div>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', fontWeight: 600 }}>Balance: ₹{availableCredits}</span>
-                </div>
-                
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button 
-                    onClick={togglePolarCredits}
-                    style={{ 
-                      flex: 1, padding: '12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.2s',
-                      background: polarCreditsApplied ? 'var(--color-success)' : 'var(--color-primary)',
-                      color: '#fff', border: 'none'
-                    }}
-                  >
-                    {polarCreditsApplied ? 'Credits Applied ✓' : 'Apply Credits (Up to ₹200)'}
-                  </button>
-                </div>
-                {polarCreditsMessage && (
-                  <div style={{ fontSize: '0.85rem', marginTop: '8px', color: polarCreditsApplied ? 'var(--color-success)' : 'var(--color-error)' }}>
-                    {polarCreditsMessage}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div style={{ marginBottom: '20px', padding: '16px', background: 'rgba(0, 102, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(0, 102, 255, 0.1)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>💎</span>
-                    <strong style={{ fontSize: '1rem', color: 'var(--color-primary)' }}>Polar Credits</strong>
-                  </div>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', fontWeight: 600 }}>Available: ₹0</span>
-                </div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', margin: 0, lineHeight: 1.5, marginBottom: '12px' }}>
-                  Refer friends or complete your first referral order to earn ₹200 Polar Credits.
-                </p>
-                <Link href="/refer" style={{
-                  display: 'inline-block', textAlign: 'center', width: '100%', padding: '10px', borderRadius: '8px', 
-                  fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s',
-                  background: 'transparent', color: 'var(--color-accent)', border: '1px solid var(--color-accent)', textDecoration: 'none'
-                }}>
-                  Learn How to Earn
-                </Link>
-              </div>
-            )}
-
-            <div className={styles.discountRow}>
+          <div className={styles.discountRow}>
               <input
                 type="text"
                 className={styles.discountInput}
@@ -305,7 +222,7 @@ export default function CartPage() {
                   style={{ background: 'var(--color-success)', cursor: 'pointer' }}
                   title="Remove promo code"
                 >
-                  APPLIED ✓
+                  APPLIED
                 </button>
               ) : (
                 <button
@@ -321,7 +238,6 @@ export default function CartPage() {
                 {promoMessage.text}
               </p>
             )}
-          </div>
 
           <hr className={styles.divider} />
 

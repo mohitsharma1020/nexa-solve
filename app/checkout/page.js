@@ -7,7 +7,6 @@ import {
   ShieldCheck, ArrowRight, CheckCircle2, Truck, RefreshCcw,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import CartBonusTimer from '../components/CartBonusTimer';
 import { functions } from '../../services/firebaseClient';
 import { httpsCallable } from 'firebase/functions';
 
@@ -49,16 +48,10 @@ export default function CheckoutPage() {
     appliedPromoCode,
     promoMessage,
     actualDiscount,
-    polarCreditsUsed,
-    polarCreditsApplied,
-    completeOrder,
-    isInitialized,
-    isCartBonusActive,
-    hasCartBonusExpired,
-    actualCartBonus,
-    CART_BONUS_AMOUNT,
     FREE_SHIPPING_THRESHOLD,
     amountToFreeShipping,
+    completeOrder,
+    isInitialized,
   } = useCart();
 
   const promoIsApplied = appliedPromoCode === 'ANTARCTICA';
@@ -154,11 +147,8 @@ export default function CheckoutPage() {
   };
 
   if (orderSuccess && completedOrder) {
-    const savedWithBonus = completedOrder.cartBonusApplied && completedOrder.cartBonusAmount > 0;
     const totalSaved = (completedOrder.promoDiscount || 0) +
-                       (completedOrder.shippingDiscount || 0) +
-                       (completedOrder.polarCreditsUsed || 0) +
-                       (savedWithBonus ? completedOrder.cartBonusAmount : 0);
+                       (completedOrder.shippingDiscount || 0);
 
     return (
       <div style={{ maxWidth: 560, margin: '60px auto', padding: '40px 20px', textAlign: 'center' }}>
@@ -178,7 +168,7 @@ export default function CheckoutPage() {
         </p>
         <p style={{ fontSize: '0.9rem', color: 'var(--color-text-light)', marginBottom: 28 }}>
           A customer profile has been created for <strong>{completedOrder.email}</strong>.
-          You can track this order and your Polar Credits from your account.
+          You can track this order from your account.
         </p>
 
         {/* Savings Summary */}
@@ -201,16 +191,6 @@ export default function CheckoutPage() {
                 • Free Shipping: -₹{completedOrder.shippingDiscount}
               </p>
             )}
-            {completedOrder.polarCreditsUsed > 0 && (
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', margin: '4px 0' }}>
-                • Polar Credits: -₹{completedOrder.polarCreditsUsed}
-              </p>
-            )}
-            {savedWithBonus && (
-              <p style={{ fontSize: '0.85rem', color: '#3b82f6', margin: '4px 0', fontWeight: 600 }}>
-                ⚡ 10-Minute Cart Bonus: -₹{completedOrder.cartBonusAmount}
-              </p>
-            )}
           </div>
         )}
 
@@ -226,16 +206,7 @@ export default function CheckoutPage() {
           >
             Track My Order
           </Link>
-          <Link
-            href="/refer"
-            style={{
-              display: 'block', background: 'transparent', color: 'var(--color-accent)',
-              padding: '13px 28px', borderRadius: '12px', fontWeight: 600,
-              textDecoration: 'none', border: '1px solid var(--color-accent)', fontSize: '0.95rem'
-            }}
-          >
-            Refer a Friend & Earn ₹200 Polar Credits
-          </Link>
+
           <Link
             href="/shop"
             style={{
@@ -405,8 +376,6 @@ export default function CheckoutPage() {
           background: 'var(--color-white)', borderRadius: 20, padding: '2rem',
           border: '1px solid var(--color-border)', position: 'sticky', top: '120px',
         }}>
-          {/* ── Cart Bonus Timer ── */}
-          <CartBonusTimer variant="checkout" />
 
           <h2 style={sectionTitleStyle}>Order Summary</h2>
 
@@ -481,23 +450,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {polarCreditsUsed > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--color-success)', fontWeight: 600 }}>
-                <span>Polar Credits Applied</span>
-                <span>-₹{polarCreditsUsed.toLocaleString('en-IN')}</span>
-              </div>
-            )}
-
-            {/* Cart Bonus Line Item */}
-            {(isCartBonusActive || hasCartBonusExpired) && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 600,
-                color: isCartBonusActive ? 'var(--color-success)' : '#9ca3af',
-                fontStyle: hasCartBonusExpired ? 'italic' : 'normal'
-              }}>
-                <span>10-Min Cart Bonus</span>
-                <span>{isCartBonusActive ? `-₹${CART_BONUS_AMOUNT}` : 'Expired'}</span>
-              </div>
-            )}
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
@@ -579,9 +531,7 @@ export default function CheckoutPage() {
           </button>
 
           <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--color-text-light)', margin: 0, padding: '0 20px' }}>
-            By placing your order, you agree to our Terms of Service and Privacy Policy. 
-            <br/><br/>
-            <strong>Note:</strong> Polar Credits are store credits and cannot be withdrawn or transferred.
+            By placing your order, you agree to our Terms of Service and Privacy Policy.
           </p>
 
           {/* Trust */}

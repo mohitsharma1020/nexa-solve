@@ -43,18 +43,15 @@ export default function Navbar() {
   const navLinks = [
     { href: '/shop', label: 'Shop All' },
     { href: '/shop', label: 'Categories' },
-    { href: '/refer', label: 'Refer & Earn' },
-    { href: '/account/credits', label: 'My Credits' },
   ];
 
   const announcementItems = [
     <><strong>Free Shipping</strong> on First Orders</>,
     <>⚡ Flash Sale: Up to 40% Off</>,
     <>Use Code <strong>ANTARCTICA</strong> for <strong>₹250 OFF</strong></>,
-    <>🎁 New Arrivals Just Dropped</>,
-    <>Earn ₹200 <strong>Polar Credits</strong> by Referring Friends</>,
-    <>🧊 Explore the Polar Heritage Collection</>,
-    <>🚀 Smart Finds for Everyday Life</>,
+    <>⭐ New Arrivals Just Dropped</>,
+    <>🎒 Explore the Polar Heritage Collection</>,
+    <>💡 Smart Finds for Everyday Life</>,
     <>Travel Gear Picks Now Live</>,
     <>First Order Benefit: <strong>₹250 OFF</strong> + <strong>Free Shipping</strong></>,
     <>Premium Lifestyle Products Inspired by Antarctica</>

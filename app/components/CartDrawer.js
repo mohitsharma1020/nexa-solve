@@ -2,7 +2,6 @@
 
 import { useCart } from '../context/CartContext';
 import styles from './CartDrawer.module.css';
-import CartBonusTimer from './CartBonusTimer';
 import { X, Minus, Plus, Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,29 +30,11 @@ export default function CartDrawer() {
     removePromo,
     promoMessage,
     actualDiscount,
-    availableCredits,
-    polarCreditsApplied,
-    polarCreditsMessage,
-    polarCreditsUsed,
-    togglePolarCredits,
     isInitialized,
-    actualCartBonus,
-    isCartBonusActive,
-    hasCartBonusExpired,
-    CART_BONUS_AMOUNT,
     processCheckout,
   } = useCart();
 
-  const [hasReferral, setHasReferral] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const refCode = localStorage.getItem('nexa_referral_code');
-      if (refCode) {
-        setHasReferral(true);
-      }
-    }
-  }, [isDrawerOpen]);
 
   const promoIsApplied = appliedPromoCode === 'ANTARCTICA';
 
@@ -102,9 +83,6 @@ export default function CartDrawer() {
             <X size={24} />
           </button>
         </div>
-
-        {/* ── Cart Bonus Timer Banner ── */}
-        {cartItems.length > 0 && <CartBonusTimer variant="drawer" />}
 
         {cartItems.length === 0 ? (
           <div className={styles.emptyState}>
@@ -156,17 +134,8 @@ export default function CartDrawer() {
                   {/* Offer Card 1 */}
                   <div className={styles.offerCard} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f5f5f7', padding: '12px', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--color-border)' }}>
                     <div>
-                      {hasReferral ? (
-                        <>
-                          <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px', color: '#0066FF' }}>Referral Benefit Unlocked</strong>
-                          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>You received ₹200 OFF through a referral.</p>
-                        </>
-                      ) : (
-                        <>
-                          <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>ANTARCTICA</strong>
-                          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Use code at checkout for ₹1250 OFF.</p>
-                        </>
-                      )}
+                      <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>ANTARCTICA</strong>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Use code at checkout for ₹1250 OFF.</p>
                     </div>
                     <button 
                       className={styles.offerCardBtn}
@@ -178,17 +147,6 @@ export default function CartDrawer() {
                     >
                       Copy Code
                     </button>
-                  </div>
-
-                  {hasReferral && (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', textAlign: 'center', marginBottom: '12px' }}>
-                      Discount is applied securely at Shopify checkout.
-                    </div>
-                  )}
-
-                  {/* Offer Card 2: 10-Minute Timer (Imported Component) */}
-                  <div style={{ background: '#f5f5f7', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                    <CartBonusTimer variant="compact" />
                   </div>
                 </div>
               ) : (
@@ -229,74 +187,7 @@ export default function CartDrawer() {
                 </div>
               )}
 
-              {/* Polar Credits Section */}
-              <div style={{ marginBottom: '20px', padding: '16px', background: 'linear-gradient(145deg, #f8f9fa, #ffffff)', borderRadius: '12px', border: '1px solid var(--color-border)', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>💎</span>
-                    <strong style={{ fontSize: '1rem', color: 'var(--color-primary)' }}>Polar Credits</strong>
-                  </div>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--color-primary)', fontWeight: 800 }}>Balance: ₹{availableCredits}</span>
-                </div>
-                
-                {availableCredits <= 0 ? (
-                  <div>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginBottom: '12px', lineHeight: 1.4 }}>
-                      Refer friends or complete your first referral order to earn <strong>₹200 Polar Credits</strong>.
-                    </p>
-                    <Link href="/refer" onClick={() => toggleDrawer(false)} style={{
-                      display: 'block', textAlign: 'center', width: '100%', padding: '10px', borderRadius: '8px', 
-                      fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s',
-                      background: 'transparent', color: 'var(--color-accent)', border: '1px solid var(--color-accent)', textDecoration: 'none'
-                    }}>
-                      Learn How to Earn
-                    </Link>
-                  </div>
-                ) : (
-                  <div>
-                    {process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' ? (
-                      <div className={styles.polarCreditsBox} style={{ background: 'rgba(0, 102, 255, 0.05)', border: '1px dashed #0066FF' }}>
-                        <h4 style={{ margin: 0, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: '#0066FF' }}>❄️</span> Polar Credits
-                        </h4>
-                        <p style={{ margin: '6px 0 0', fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                          You have <strong style={{ color: 'var(--color-text)' }}>₹{availableCredits}</strong> available.<br/>
-                          <em>Polar Credits will be available to redeem as a Shopify discount code soon!</em>
-                        </p>
-                      </div>
-                    ) : (
-                      <div className={styles.polarCreditsBox}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                          <div>
-                            <h4 style={{ margin: 0, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ color: '#0066FF' }}>❄️</span> Polar Credits
-                            </h4>
-                            <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'var(--color-text-light)' }}>
-                              Available: <strong style={{ color: 'var(--color-text)' }}>₹{availableCredits}</strong>
-                            </p>
-                          </div>
-                          <button 
-                            className={polarCreditsApplied ? styles.removeCreditsBtn : styles.applyCreditsBtn}
-                            onClick={togglePolarCredits}
-                            disabled={availableCredits <= 0}
-                            style={{ 
-                              opacity: availableCredits <= 0 ? 0.5 : 1, 
-                              cursor: availableCredits <= 0 ? 'not-allowed' : 'pointer'
-                            }}
-                          >
-                            {polarCreditsApplied ? 'Credits Applied ✓' : 'Apply Credits (Up to ₹200)'}
-                          </button>
-                        </div>
-                        {polarCreditsMessage && (
-                          <div style={{ fontSize: '0.85rem', marginTop: '10px', fontWeight: 500, color: polarCreditsApplied ? 'var(--color-success)' : 'var(--color-error)' }}>
-                            {polarCreditsMessage}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+
 
               <div className={styles.summary}>
                 {isFirstOrder && shippingDiscount > 0 && (
@@ -343,27 +234,7 @@ export default function CartDrawer() {
                   </div>
                 )}
 
-                {polarCreditsUsed > 0 && (
-                  <div className={styles.summaryRow} style={{ color: 'var(--color-success)' }}>
-                    <span>Polar Credits</span>
-                    <span>-₹{polarCreditsUsed.toLocaleString('en-IN')}</span>
-                  </div>
-                )}
 
-                {/* Cart Bonus Line Item */}
-                {(isCartBonusActive || hasCartBonusExpired) && (
-                  <div className={`${styles.summaryRow} ${isCartBonusActive ? styles.discount : ''}`} style={{
-                    color: isCartBonusActive ? '#22c55e' : '#9ca3af',
-                    fontStyle: hasCartBonusExpired ? 'italic' : 'normal'
-                  }}>
-                    <span>10-Min Cart Bonus</span>
-                    {process.env.NEXT_PUBLIC_USE_SHOPIFY_CHECKOUT === 'true' ? (
-                      <span>{isCartBonusActive ? `Use code CART40 at checkout` : 'Expired'}</span>
-                    ) : (
-                      <span>{isCartBonusActive ? `-₹${CART_BONUS_AMOUNT}` : 'Expired'}</span>
-                    )}
-                  </div>
-                )}
 
                 {/* Total row omitted here since it is now strictly in the sticky footer */}
               </div>
